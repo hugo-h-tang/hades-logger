@@ -10,14 +10,19 @@ import Logging
 import ZIPFoundation
 
 class FileLogHandler: LogHandler {
+    enum Error: Swift.Error {
+        // maximumNumberOfLogFiles should bigger then 0
+        case wrongMaximumNumberOfLogFiles
+    }
+    
     var loggerQueue: DispatchQueue?
     var logLevel: Logger.Level = .warning
     var metadata: Logger.Metadata = [:]
     
     var fileDateFormatter: DateFormatter
     var maximumNumberOfLogFiles: Int = 5
-    var maximumFileSize: Int = 5_000_000
-    var bufferSize: Int = 512_000
+    var maximumFileSize: Int = 5_120_000
+    var bufferSize: Int = 512
     var currentLogFile: LogFile?
     private var logFileManager: LogFileManager
     private var buffer: Data?
@@ -34,10 +39,6 @@ class FileLogHandler: LogHandler {
         )
         let logDirectory = baseURL.appendingPathComponent("hades-log", isDirectory: true)
         logFileManager = LogFileManager(logDirectory: logDirectory)
-        let logFiles = (try? logFileManager.queryLogFiles()) ?? []
-//        if logFiles.count == 0 {
-//            try? touchNewLogFile()
-//        }
     }
     
     subscript(metadataKey metadataKey: String) -> Logger.Metadata.Value? {
@@ -141,11 +142,17 @@ class FileLogHandler: LogHandler {
         guard logFiles.count > maximumNumberOfLogFiles else {
             return
         }
+        guard (logFiles.count - maximumNumberOfLogFiles) > 0 else {
+            throw Error.wrongMaximumNumberOfLogFiles
+        }
+        let removeLogs = logFiles.suffix(logFiles.count - maximumNumberOfLogFiles)
+        for file in removeLogs {
+            try logFileManager.remove(at: file.url)
+        }
     }
     
     func removeAllLogs() throws {
         try logFileManager.removeAllLogs()
-//        try touchNewLogFile()
     }
     
     /// 将日志文件打包

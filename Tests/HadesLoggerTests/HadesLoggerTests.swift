@@ -7,21 +7,23 @@ final class HadesLoggerTests: XCTestCase {
     
     override func setUp() async throws {
         let label = "xyz.123.qqq"
-        var handler = ProxyLogHandler(loggerQueue: DispatchQueue.init(label: label), logLevel: .debug, metadata: [:])
-        let oslogHandler = OSLogHandler(label: label)
-        handler.add(handler: oslogHandler)
+        let handler = HadesLogger.hadesHandler(label: label)
         log = Logger(label: label, handler)
         log.logLevel = .debug
-        LoggingSystem.bootstrap { _ in handler }
+        LoggingSystem.bootstrapInternal() { _ in handler }
     }
     
     func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        log.debug("hugo", metadata: ["category": "hugo"])
-        log.debug("mask", metadata: ["category": "mask"])
-        log.debug("default")
-        XCTAssertEqual(HadesLogger().text, "Hello, World!")
+        // A simple test to see if the code will run.
+        // You can cancel the following comments (line 22 and line 27 to see if the console log is printed,
+        // and if the log file is generated properly.
+        // The log file is inside the hades-log in the cache directory.
+        // for example: `/Users/{NAME}/Library/Caches/hades-log/`
+//        while true {
+            sleep(1)
+            log.debug("hugo", metadata: ["category": "hugo"])
+            log.debug("mask", metadata: ["category": "mask"])
+            log.debug("default")
+//        }
     }
 }
