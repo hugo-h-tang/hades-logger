@@ -1,0 +1,45 @@
+@startuml
+interface Logging.LogHandler {
+  +logLevel: Level
+  +metadata: Metadata
+
+  +log(level:message:metadata:source:file:function:line:)
+}
+interface LogHandler {
+  +loggerQueue: Queue
+}
+class Logger
+class ProxyLogHandler {
+  +add(handler:)
+}
+class OSLogHandler
+class FileLogHandler {
+  +logFileManager: LogFileManager 
+  +maximumFileSize: double
+  +rollingFrequency: TimeInterval
+  
+  +shareLogs()
+}
+class LogFileManager {
+  +fileDateFormatter: DateFormatter
+  +logFilesDiskQuota: long
+  +maximumNumberOfLogFiles: int
+
+  +cleanup(): bool
+  +currentFileURL(): URL
+  +zipLogs(): URL
+
+  -logDirectory(): URL
+  -queryDiskQuota(): long
+}
+
+LogHandler ..|> Logging.LogHandler
+Logger --> ProxyLogHandler
+ProxyLogHandler ..|> LogHandler
+OSLogHandler ..|> LogHandler
+FileLogHandler ..|> LogHandler
+FileLogHandler --> LogFileManager
+ProxyLogHandler --> OSLogHandler
+ProxyLogHandler -->  FileLogHandler
+
+@enduml
