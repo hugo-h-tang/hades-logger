@@ -128,7 +128,17 @@ class FileLogHandler: LogHandler {
     /// zip all logs into a zip file
     /// - Returns: a url of log file
     func zipLogs() throws -> URL? {
+        try loggerQueue?.sync {
+            try? self._flush(false)
+            return try self._zipLogs()
+        }
+    }
+    
+    private func _zipLogs() throws -> URL? {
         let archiveURL = logFileManager.logDirectory.appendingPathComponent("logs.zip")
+        if logFileManager.isExistsDirectory(at: archiveURL) {
+            try logFileManager.remove(at: archiveURL)
+        }
         guard let archive = Archive(url: archiveURL, accessMode: .create) else  {
             return nil
         }

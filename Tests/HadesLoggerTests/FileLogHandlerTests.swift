@@ -50,27 +50,24 @@ class FileLogHandlerTests: XCTestCase {
         for i in 0..<40 {
             log.debug("test \(i)")
         }
-        try fileLogHandler.flush()
-        try queue.sync {
-            let baseURL = try! FileManager.default.url(
-                for: .cachesDirectory,
-                in: .userDomainMask,
-                appropriateFor: nil,
-                create: true
-            )
-            let logDirectory = baseURL.appendingPathComponent("hades-log", isDirectory: true)
-            let logFileManager = LogFileManager(logDirectory: logDirectory)
-            let logs = try logFileManager.queryLogFiles()
-            if let logFileURL = logs.first?.url {
-                let content = try String(contentsOf: logFileURL)
-                XCTAssert(content.hasSuffix("test 39"), "This file should end with 'test 39' according to the code at line 50.")
-            }
-            for log in logs {
-                XCTAssert(log.size <= fileLogHandler.maximumFileSize)
-            }
-            if logs.count >= 2 {
-                XCTAssert((logs[0].size + logs[1].size) > fileLogHandler.maximumFileSize)
-            }
+        let baseURL = try! FileManager.default.url(
+            for: .cachesDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: true
+        )
+        let logDirectory = baseURL.appendingPathComponent("hades-log", isDirectory: true)
+        let logFileManager = LogFileManager(logDirectory: logDirectory)
+        let logs = try logFileManager.queryLogFiles()
+        if let logFileURL = logs.first?.url {
+            let content = try String(contentsOf: logFileURL)
+            XCTAssert(content.hasSuffix("test 39"), "This file should end with 'test 39' according to the code at line 50.")
+        }
+        for log in logs {
+            XCTAssert(log.size <= fileLogHandler.maximumFileSize)
+        }
+        if logs.count >= 2 {
+            XCTAssert((logs[0].size + logs[1].size) > fileLogHandler.maximumFileSize)
         }
     }
     
@@ -78,19 +75,16 @@ class FileLogHandlerTests: XCTestCase {
         for i in 0..<40 {
             log.debug("test \(i)")
         }
-        try fileLogHandler.flush()
         
-        try queue.sync {
-            guard let url = try fileLogHandler.zipLogs() else {
-                XCTAssert(false)
-                return
-            }
-            let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
-            guard let fileSize = attributes[.size] as? Int else {
-                XCTAssert(false)
-                return
-            }
-            XCTAssert(fileSize > 2_000 )
+        guard let url = try fileLogHandler.zipLogs() else {
+            XCTAssert(false)
+            return
         }
+        let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
+        guard let fileSize = attributes[.size] as? Int else {
+            XCTAssert(false)
+            return
+        }
+        XCTAssert(fileSize > 2_000 )
     }
 }
