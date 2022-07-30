@@ -41,6 +41,22 @@ let url = try fileLogHandler.zipLogs()
 
 ![zip logs](docs/images/image-20220730230255924.png)
 
+For iOS side, you can share logs through `UIActivityViewController`, e.g.
+
+```swift
+guard let url = try? hadesLogger.zipLogs() else {
+    return
+}
+var filesToShare = [Any]()
+filesToShare.append(url)
+let activityViewController = UIActivityViewController(
+    activityItems: filesToShare,
+    applicationActivities: nil
+)
+```
+
+<img src="docs/images/image-20220731005753835.png" alt="share logs at iOS device" style="zoom: 25%;" />
+
 ## Class Diagram
 
 ![class diagram](./docs/01.class_diagram.png) 

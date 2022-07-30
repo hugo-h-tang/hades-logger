@@ -6,7 +6,7 @@ public struct HadesLogger {
     private let oslogHandler: OSLogHandler
     private let fileLogHandler: FileLogHandler
     
-    init(label: String) {
+    public init(label: String) {
         self.label = label
         oslogHandler = OSLogHandler(label: label)
         fileLogHandler = FileLogHandler()
