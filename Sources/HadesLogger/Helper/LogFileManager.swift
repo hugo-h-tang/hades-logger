@@ -47,7 +47,7 @@ struct LogFileManager {
         }
     }
     
-    /// 将日志追加到文件后面
+    /// append data to current log file
     func append(_ data: Data?, at url: URL) throws {
         guard let data = data else {
             return

@@ -9,8 +9,8 @@ import Foundation
 import Logging
 
 struct ProxyLogHandler: LogHandler {
-    var loggerQueue: DispatchQueue?
     var logLevel: Logger.Level
+    var loggerQueue: DispatchQueue?
     var metadata: Logger.Metadata {
         didSet {
             prettyMetadata = prettify(metadata)

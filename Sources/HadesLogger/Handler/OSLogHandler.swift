@@ -11,12 +11,12 @@ import struct Logging.Logger
 import os
 
 class OSLogHandler: LogHandler {
-    var loggerQueue: DispatchQueue?
     var logLevel: Logger.Level = .warning
+    var loggerQueue: DispatchQueue?
     var metadata: Logger.Metadata = [:]
-    private var loggers: [String: OSLog] = [:]
     private let defaultLogger: OSLog
     private let label: String
+    private var loggers: [String: OSLog] = [:]
     
     init(label: String, category: String = "default") {
         self.label = label
