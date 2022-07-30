@@ -1,0 +1,71 @@
+@startuml
+interface Logging.LogHandler {
+  +logLevel: Level
+  +metadata: Metadata
+
+  +log(level:message:metadata:source:file:function:line:)
+}
+interface LogHandler {
+  +loggerQueue: Queue
+}
+class Logger
+class HadesLogger {
+  + hadesHandler(label:)
+}
+class ProxyLogHandler {
+  - handlers: [LogHandler] = []
+  - prettyMetadata: String?
+
+  + init(loggerQueue:logLevel:metadata:)
+  + add(handler: LogHandler)
+  - prettify(_ metadata: Logger.Metadata)
+}
+class OSLogHandler {
+  - defaultLogger: OSLog
+  - label: String
+  - loggers: [String: OSLog]
+
+  + init(label:category:)
+}
+class FileLogHandler {
+  + bufferSize: Int
+  + currentLogFile: LogFile?
+  + fileDateFormatter: DateFormatter
+  + maximumFileSize: Int
+  + maximumNumberOfLogFiles: Int
+  - buffer: Data?
+  - logFileManager: LogFileManager
+
+  + cleanup()
+  + flush()
+  + generateNameForLogFile()
+  + touchNewLogFile()
+  + removeAllLogs()
+  + zipLogs()
+  - _flush(touchNewFile:)
+  - flushIfNeeded()
+}
+class LogFileManager {
+  + logDirectory: URL
+  - fileManager: FileManager
+
+  + createLogFile(at url: URL)
+  + createEmptyDirectoryIfNeeded(at url: URL)
+  + queryLogFiles()
+  + append(_ data: Data?, at url: URL)
+  + removeAllLogs()
+  + remove(at url: URL)
+  + removeDirectory(at url: URL)
+  + isExistsDirectory(at url: URL)
+}
+
+LogHandler ..|> Logging.LogHandler
+Logger --> ProxyLogHandler
+ProxyLogHandler ..|> LogHandler
+OSLogHandler ..|> LogHandler
+FileLogHandler ..|> LogHandler
+FileLogHandler --> LogFileManager
+ProxyLogHandler --> OSLogHandler
+ProxyLogHandler -->  FileLogHandler
+
+@enduml
