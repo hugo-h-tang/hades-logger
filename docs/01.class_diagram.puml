@@ -10,7 +10,13 @@ interface LogHandler {
 }
 class Logger
 class HadesLogger {
-  + hadesHandler(label:)
+  + label: String
+  - oslogHandler: OSLogHandler
+  - fileLogHandler: fileLogHandler
+
+  + init(label: String)
+  + func hadesHandler(): Logging.LogHandler
+  + func zipLogs(): URL?
 }
 class ProxyLogHandler {
   - handlers: [LogHandler] = []
@@ -59,6 +65,8 @@ class LogFileManager {
   + isExistsDirectory(at url: URL)
 }
 
+HadesLogger --> OSLogHandler
+HadesLogger --> FileLogHandler
 LogHandler ..|> Logging.LogHandler
 Logger --> ProxyLogHandler
 ProxyLogHandler ..|> LogHandler

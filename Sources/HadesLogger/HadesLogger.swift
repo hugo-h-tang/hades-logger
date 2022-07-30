@@ -2,13 +2,25 @@ import Logging
 import Foundation
 
 public struct HadesLogger {
-    public static func hadesHandler(label: String) -> Logging.LogHandler {
+    let label: String
+    private let oslogHandler: OSLogHandler
+    private let fileLogHandler: FileLogHandler
+    
+    init(label: String) {
+        self.label = label
+        oslogHandler = OSLogHandler(label: label)
+        fileLogHandler = FileLogHandler()
+    }
+    
+    public func hadesHandler() -> Logging.LogHandler {
         let queue = DispatchQueue.init(label: label)
         var proxyHandler = ProxyLogHandler(loggerQueue: queue, logLevel: .debug, metadata: [:])
-        let oslogHandler = OSLogHandler(label: label)
-        let fileLogHandler = FileLogHandler()
         proxyHandler.add(handler: oslogHandler)
         proxyHandler.add(handler: fileLogHandler)
         return proxyHandler
+    }
+    
+    public func zipLogs() throws -> URL? {
+        try fileLogHandler.zipLogs()
     }
 }

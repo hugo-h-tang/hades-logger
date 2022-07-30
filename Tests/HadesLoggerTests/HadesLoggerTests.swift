@@ -7,7 +7,8 @@ final class HadesLoggerTests: XCTestCase {
     
     override func setUp() async throws {
         let label = "xyz.123.qqq"
-        let handler = HadesLogger.hadesHandler(label: label)
+        let hadesLogger = HadesLogger(label: label)
+        let handler = hadesLogger.hadesHandler()
         log = Logger(label: label, handler)
         log.logLevel = .debug
         LoggingSystem.bootstrapInternal() { _ in handler }

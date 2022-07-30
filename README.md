@@ -31,6 +31,16 @@ log.debug("mask", metadata: ["category": "mask"])
 log.debug("default")
 ```
 
+### Share logs
+
+You can send the zip file to others later if the zip is successful.
+
+```swift
+let url = try fileLogHandler.zipLogs()
+```
+
+![zip logs](docs/images/image-20220730230255924.png)
+
 ## Class Diagram
 
-![class diagram](./docs/01.class_diagram.svg) 
+![class diagram](./docs/01.class_diagram.png) 
